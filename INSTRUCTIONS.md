@@ -36,6 +36,10 @@ Please note our expectations are put on improving the quality of the product. We
 
 This `INSTRUCTIONS.md` file is the only one that is not part of the deliverable. Feel free to remove it if you want. We do not expect you to make any change to it, and we will completely ignore it.
 
+:warning: Avoid dependencies and tools that would require changes to the `acceptance` step of [.gitlab-ci.yml](./.gitlab-ci.yml)
+
+:warning: The challenge needs to be self-contained so we can evaluate it. If this programming language blocks you from solving this challenge without using a database, please document your reasoning in the readme and use an embedded one such as sqlite.
+
 ### Checks
 
 As you will find in later, the codebase is configured to use GitLab for Continous Integration. You will find a CI job called `acceptance` in its config. It executes the tests that QA has delivered so far for the acceptance of this service. As said above, initially the tests do not pass. You must ensure the CI job is not removed and its tests are green before shipping your changes. 
