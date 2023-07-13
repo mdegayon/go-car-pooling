@@ -48,6 +48,8 @@ Once you have completed all the changes to the repository and you submit your so
 
 ## Tips and tricks
 
+- Think twice before throwing the code into the trash and rewrite it from scratch. Your seniors expect to see you improve the codebase. Not to waste your time reinventing the wheel. If you decide on a full rewrite, you had better document the reasons and trade-offs.
+
 - Use your time wisely. Do not make any change that is not moving the ball one step closer to your archetype of well-done software. 
 
 - Assume it is for real. This code will be eventually used in Production, and different stakeholders will have to deal with it. Think that high-quality software is the one that makes our lives easier. Everybody lives.
