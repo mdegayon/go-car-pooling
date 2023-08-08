@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	carPool := service.New_CarPool()
+	carPool := service.NewCarpool()
 	controller := api.NewController(carPool)
 
 	gin.SetMode(gin.ReleaseMode)

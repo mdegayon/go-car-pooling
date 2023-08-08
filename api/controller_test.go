@@ -11,7 +11,7 @@ import (
 )
 
 func TestStatus(t *testing.T) {
-	router := NewController(service.New_CarPool())
+	router := NewController(service.NewCarpool())
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/status", nil)
@@ -22,13 +22,13 @@ func TestStatus(t *testing.T) {
 }
 
 func TestAPI(t *testing.T) {
-	router := NewController(service.New_CarPool())
+	router := NewController(service.NewCarpool())
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("PUT", "/cars", strings.NewReader(`
 	[
-		{ "id": 1, "maxSeats": 4 },
-		{ "id": 2, "maxSeats": 6 }
+		{ "id": 1, "seats": 4 },
+		{ "id": 2, "seats": 6 }
 	]`))
 	req.Header = map[string][]string{"Content-Type": {"application/json"}}
 	router.engine.ServeHTTP(w, req)
@@ -36,7 +36,7 @@ func TestAPI(t *testing.T) {
 
 	w = httptest.NewRecorder()
 	req, _ = http.NewRequest("POST", "/journey", strings.NewReader(`
-	{ "id": 1, "passengers": 4 }
+	{ "id": 1, "people": 4 }
 	`))
 	req.Header = map[string][]string{"Content-Type": {"application/json"}}
 	router.engine.ServeHTTP(w, req)
@@ -47,7 +47,7 @@ func TestAPI(t *testing.T) {
 	req.Header = map[string][]string{"Content-Type": {"application/x-www-form-urlencoded"}}
 	router.engine.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, `{"id":1,"maxSeats":4,"availableSeats":0}`, string(w.Body.Bytes()))
+	assert.Equal(t, `{"id":1,"seats":4,"availableSeats":0}`, string(w.Body.Bytes()))
 
 	w = httptest.NewRecorder()
 	req, _ = http.NewRequest("POST", "/dropoff", strings.NewReader("ID=1"))

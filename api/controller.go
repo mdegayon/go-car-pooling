@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,12 @@ func NewController(service *service.CarPool) *Controller {
 }
 
 func (c *Controller) Run() {
-	c.engine.Run("0.0.0.0:8080")
+
+	err := c.engine.Run("0.0.0.0:8080")
+	if err != nil {
+		return
+	}
+
 }
 
 func (c *Controller) getStatus(ctx *gin.Context) {
@@ -81,6 +87,7 @@ func (c *Controller) postJourney(ctx *gin.Context) {
 	if err := c.service.NewJourney(&journey); err != nil {
 		switch err {
 		case service.ErrDuplicatedID:
+		case service.ErrInvalidPassengersNumber:
 			ctx.Status(http.StatusBadRequest)
 		default:
 			ctx.Status(http.StatusInternalServerError)
@@ -101,14 +108,15 @@ func (c *Controller) postDropoff(ctx *gin.Context) {
 	}
 
 	var dropoff struct {
-		Id uint `form:"ID" binding:"required"`
+		Id *uint `form:"ID" binding:"required"`
 	}
+
 	if err := ctx.Bind(&dropoff); err != nil {
 		return
 	}
 
-	car, err := c.service.Dropoff(dropoff.Id)
-	if err == service.ErrNotFound {
+	car, err := c.service.Dropoff(*dropoff.Id)
+	if errors.Is(err, service.ErrNotFound) {
 		ctx.Status(http.StatusNotFound)
 		return
 	}
@@ -136,14 +144,15 @@ func (c *Controller) postLocate(ctx *gin.Context) {
 	}
 
 	var locate struct {
-		Id uint `form:"ID" binding:"required"`
+		Id *uint `form:"ID" binding:"required"`
 	}
 	if err := ctx.Bind(&locate); err != nil {
 		return
 	}
 
-	car, err := c.service.Locate(locate.Id)
-	if err == service.ErrNotFound {
+	car, err := c.service.Locate(*locate.Id)
+
+	if errors.Is(err, service.ErrNotFound) {
 		ctx.Status(http.StatusNotFound)
 		return
 	}
