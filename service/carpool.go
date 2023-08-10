@@ -46,8 +46,7 @@ func (cp *CarPool) ResetCars(cars []*model.Car) error {
 
 	for _, currentCar := range cars {
 
-		if !cp.carHasValidNumberOfSeats(currentCar) {
-
+		if currentCar.Seats <= 0 {
 			return ErrInvalidSeatsNumber
 		}
 
@@ -59,7 +58,6 @@ func (cp *CarPool) ResetCars(cars []*model.Car) error {
 
 		carMap[currentCar.Id] = currentCar
 		carsBySeats[currentCar.AvailableSeats] = append(carsBySeats[currentCar.AvailableSeats], currentCar)
-
 	}
 
 	cp.cars = carMap
@@ -74,12 +72,12 @@ func (cp *CarPool) NewJourney(journey *model.Journey) error {
 		return ErrDuplicatedID
 	}
 
-	if journey.Passengers < JourneyMinValidSeats || journey.Passengers > JourneyMaxValidSeats {
+	if journey.People < JourneyMinValidSeats || journey.People > JourneyMaxValidSeats {
 		return ErrInvalidPassengersNumber
 	}
 
 	var selectedCar *model.Car
-	for _, availableSeats := range cp.getWorstFitForSeats(journey.Passengers) {
+	for _, availableSeats := range cp.getWorstFitForSeats(journey.People) {
 
 		if len(cp.carsByAvailableSeats[availableSeats]) > 0 {
 			selectedCar = cp.popCarFromSeatsArray(availableSeats)
@@ -90,7 +88,7 @@ func (cp *CarPool) NewJourney(journey *model.Journey) error {
 
 	if selectedCar != nil {
 		journey.AssignedTo = selectedCar
-		err := cp.updateCarAvailableSeats(selectedCar, journey.Passengers, HopIn)
+		err := cp.updateCarAvailableSeats(selectedCar, journey.People, HopIn)
 		if err != nil {
 			return err
 		}
@@ -117,7 +115,7 @@ func (cp *CarPool) Dropoff(journeyId uint) (car *model.Car, err error) {
 	if car != nil {
 
 		cp.removeCarFromSeatsArray(car.Id, car.AvailableSeats)
-		err := cp.updateCarAvailableSeats(car, journey.Passengers, DropOff)
+		err := cp.updateCarAvailableSeats(car, journey.People, DropOff)
 		if err != nil {
 			return nil, err
 		}
@@ -138,10 +136,10 @@ func (cp *CarPool) Reassign(car *model.Car) {
 
 		pendingJourney := cp.pending[i]
 
-		if pendingJourney.Passengers <= car.AvailableSeats {
+		if pendingJourney.People <= car.AvailableSeats {
 
 			pendingJourney.AssignedTo = car
-			car.AvailableSeats -= pendingJourney.Passengers
+			car.AvailableSeats -= pendingJourney.People
 
 			cp.pending = append(
 				cp.pending[:i],
@@ -185,11 +183,6 @@ func (cp *CarPool) initCarpool() {
 	for i := 0; i < len(cp.carsByAvailableSeats); i++ {
 		cp.carsByAvailableSeats[i] = make([]*model.Car, 0)
 	}
-}
-
-func (cp *CarPool) carHasValidNumberOfSeats(car *model.Car) bool {
-
-	return car.MaxSeats >= JourneyMinValidSeats && car.MaxSeats <= JourneyMaxValidSeats
 }
 
 func (cp *CarPool) getWorstFitForSeats(perfectFitSeats uint) []uint {

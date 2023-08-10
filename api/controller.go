@@ -55,7 +55,7 @@ func (c *Controller) putCars(ctx *gin.Context) {
 		return
 	}
 	for _, car := range cars {
-		car.AvailableSeats = car.MaxSeats
+		car.AvailableSeats = car.Seats
 	}
 
 	if err := c.service.ResetCars(cars); err != nil {
