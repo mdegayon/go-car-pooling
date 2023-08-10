@@ -6,14 +6,14 @@
 -	ii)		Cars is now a map indexed by Id
 
 
--	iii)	A new array of car slices indexed by the number of avalaible seats (CarsByAvailableSeats) has been added to the Car Pool service.
+-	iii)	A new array of car slices indexed by the number of available seats (CarsByAvailableSeats) has been added to the Carpool service.
 
 
 -	iv)		When assigning a new journey to a car, the car pool service will firstly try to assign it to a car having the exact number of available seats.
      if it's not possible, it will apply an allocation strategy based on the worst fit, trying to leave the largest number of seats available in the car (which could be used for subsequent journeys).
 
 
--	v)		The Car Pool Reassign function won't stop after finding the first pending journey that would fit into the car(as it was doing in the original version of the function),
+-	v)		The Carpool Reassign function won't stop after finding the first pending journey that would fit into the car(as it was doing in the original version of the function),
      the function will now loop through all the pending journeys while there's still available seats in the car.
  
 ## A few words about the changes
@@ -24,16 +24,17 @@
     It has to be tested with a bigger amount of data but replacing it with a linked list should result in reducing the cost of the deleting operation.
 
 
-- 	About the Worst Strategy algorithm: I think it is the algorithm that would work best since it tries to leave the more number of available seats (that could be used for other journeys). 
+- 	About the Worst Strategy algorithm: I think it is an algorithm that could work nicely since it tries to leave the biggest amount of available seats (that could be used for other journeys). 
+    However, it is not necessarily the best strategy (for instance, it may make it difficult for a 6 people journey to find a car). Still, it has to be tested with real data.
     Still, it has to be tested with real data to actually see how good it would really work. I've also included a second allocation strategy (BestFit).
 
 
-- 	No id index has been inclued in CarsByAvailableSeats. Having every item in this array indexed by Id would prevent the Car Pool service to perform a sequential search while deleting a *car during dropoff y reassign.
+- 	No id index has been included in CarsByAvailableSeats. Having every item in this array indexed by Id would prevent the Carpool service to perform a sequential search while deleting a *car during dropoff y reassign.
     If, when tested, these delete operations prove too slow, the array could be updated by indexing by id each of the array elements.
 
 
 - 	CarPool's Cars has been indexed by id foreseeing more API requests involving cars. 
-    The presence of an id in the car model makes me think that it has - or will have - greater importance in the car pooling system and, since I've anticipated that more request (having car's id as a parameter) will come, I have decided to index them.
+    The presence of an id in the car model makes me think that it has - or will have - greater importance in the carpooling system and, since I've anticipated that more request (having car's id as a parameter) will come, I have decided to index them.
 
     
 - About change #v, the changes made to the reassign function, a minGroup or an array including a counter of pending journeys per person could be used as an early out condition of the loop when there's no pending journey that would fit into the car.
