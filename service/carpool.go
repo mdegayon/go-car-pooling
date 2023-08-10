@@ -10,8 +10,6 @@ import (
 const (
 	JourneyMaxValidSeats uint = 6
 	JourneyMinValidSeats uint = 1
-	HopIn                uint = 0
-	DropOff              uint = 1
 )
 
 var ErrNotFound = errors.New("not found")
@@ -88,7 +86,7 @@ func (cp *CarPool) NewJourney(journey *model.Journey) error {
 
 	if selectedCar != nil {
 		journey.AssignedTo = selectedCar
-		err := cp.updateCarAvailableSeats(selectedCar, journey.People, HopIn)
+		err := cp.updateCarAvailableSeats(selectedCar, -journey.People)
 		if err != nil {
 			return err
 		}
@@ -115,7 +113,7 @@ func (cp *CarPool) Dropoff(journeyId uint) (car *model.Car, err error) {
 	if car != nil {
 
 		cp.removeCarFromSeatsArray(car.Id, car.AvailableSeats)
-		err := cp.updateCarAvailableSeats(car, journey.People, DropOff)
+		err := cp.updateCarAvailableSeats(car, +journey.People)
 		if err != nil {
 			return nil, err
 		}
@@ -209,16 +207,9 @@ func (cp *CarPool) getBestFitSeats(perfectFitSeats uint) []uint {
 	return bestFits
 }
 
-func (cp *CarPool) updateCarAvailableSeats(car *model.Car, passengers uint, op uint) error {
+func (cp *CarPool) updateCarAvailableSeats(car *model.Car, passengers uint) error {
 
-	var updatedSeats uint
-	if op == DropOff {
-		updatedSeats = car.AvailableSeats + passengers
-	} else if op == HopIn {
-		updatedSeats = car.AvailableSeats - passengers
-	} else {
-		return errors.New("Unknown operation")
-	}
+	updatedSeats := car.AvailableSeats + passengers
 
 	car.AvailableSeats = updatedSeats
 
