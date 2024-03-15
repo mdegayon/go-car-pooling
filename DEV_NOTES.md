@@ -9,7 +9,7 @@
 -	iii)	A new array of car slices indexed by the number of available seats (CarsByAvailableSeats) has been added to the Carpool service.
 
 
--	iv)		When assigning a new journey to a car, the car pool service will firstly try to assign it to a car having the exact number of available seats.
+-	iv)		When assigning a new journey to a car, the carpool service will firstly try to assign it to a car having the exact number of available seats.
      if it's not possible, it will apply an allocation strategy based on the worst fit, trying to leave the largest number of seats available in the car (which could be used for subsequent journeys).
 
 
